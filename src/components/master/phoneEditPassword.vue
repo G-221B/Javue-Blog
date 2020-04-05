@@ -81,7 +81,7 @@ export default {
       if (this.phone.trim() === '' || this.code.trim() === '' || this.newPassword.trim() === '' || this.passwordMsg.trim() !== '') {
         this.$message.error('请完善表单！')
       } else {
-        this.$confirm('是否保存信息？', '提示', {
+        this.$confirm('确认修改密码？', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -96,11 +96,12 @@ export default {
                 console.log(res)
                 if (res.data.success) {
                   this.$message({
-                    message: '保存成功',
+                    message: '修改成功',
                     type: 'success'
                   })
+                  this.reset()
                 } else {
-                  this.$message.error('保存失败')
+                  this.$message.error('修改失败')
                 }
               })
               .catch(err => {

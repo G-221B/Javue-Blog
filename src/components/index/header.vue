@@ -51,7 +51,7 @@
         </div>
         <div class="write" v-if="login">
           <span>
-            <router-link to="/publish">
+            <router-link to="/publish/-1">
               <i class="iconfont">&#xe7b9;</i>写博客
             </router-link>
           </span>
@@ -77,6 +77,29 @@ export default {
 
   },
   created () {
+    // 检测用户是否登陆
+    this.axios.get('/islogin')
+      .then(res => {
+        if (res.data.success) {
+          this.login = true
+          // 获取用户信息
+          this.axios.get('/user/detail?userId=' + res.data.data.userId)
+            .then(res => {
+              if (res.data.success) {
+                window.sessionStorage.setItem('user', JSON.stringify(res.data.data))
+                window.sessionStorage.setItem('login', true)
+                window.sessionStorage.setItem('userId', res.data.data.userId)
+                this.$store.state.avatar = res.data.data.userImage
+              }
+            })
+        } else {
+          this.$router.push('/minlogin')
+        }
+      })
+      .catch(err => {
+        this.$router.push('/minlogin')
+        console.log(err)
+      })
     if (window.sessionStorage.getItem('login') === 'true') {
       this.login = true
       return
@@ -84,6 +107,7 @@ export default {
     this.login = false
   },
   methods: {
+    // 搜索功能
     search () {
       if (this.content.trim() !== '') {
         this.$router.push({ name: 'search', params: { key: this.content.trim() } })

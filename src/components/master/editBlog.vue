@@ -22,7 +22,7 @@
     </form>
     <div class="blog-list clearfix">
       <ul>
-        <li class="clearfix" v-for="item in myblog" :key="item.articleId">
+        <li class="clearfix" v-for="(item,index) in myblog" :key="item.articleId">
           <h3>
             <router-link v-text="item.articleTitle" :to="'/article/'+item.articleId"></router-link>
           </h3>
@@ -46,10 +46,10 @@
               <router-link :to="'/article/'+item.articleId">查看</router-link>
             </span>
             <span class="edit">
-              <a href="#">修改</a>
+              <router-link :to="'/publish/'+item.articleId">修改</router-link>
             </span>
             <span class="delete">
-              <a href="#">删除</a>
+              <a href="#" @click.prevent="del(item.articleId,index)">删除</a>
             </span>
           </div>
         </li>
@@ -78,18 +78,19 @@ export default {
       // 关键字
       key: '',
       // 类别
-      options: [{
-        value: '0',
-        label: '前端'
-      }, {
-        value: '1',
-        label: '后端'
-      }, {
-        value: '-1',
-        label: '全部'
-      }],
+      options: [
+        {
+          value: '-1',
+          label: '全部'
+        }, {
+          value: '0',
+          label: '前端'
+        }, {
+          value: '1',
+          label: '后端'
+        }],
       // 选择的类别
-      value: '',
+      value: '-1',
       // 我的博客列表
       myblog: [
         // {
@@ -114,6 +115,7 @@ export default {
     getArticle (url) {
       this.axios.get(url)
         .then(res => {
+          console.log(res)
           if (res.data.success) {
             // 页数
             this.total = this.$store.state.pageSize * res.data.data.totalPages
@@ -151,19 +153,41 @@ export default {
     pageSkip (index) {
       this.pageIndex = index
       this.getArticle(this.pageUrl + '&page=' + this.pageIndex)
-    }
-  },
-  filters: {
-    // 处理日期
-    format (val) {
-      var date = new Date(Date.parse(val))
-      var year = date.getFullYear()
-      var month = date.getMonth() - 1
-      var day = date.getDay()
-      var hour = date.getHours()
-      var minutes = date.getMinutes()
-      var seconde = date.getSeconds()
-      return `${year}年${month}月${day}日 ${hour}:${minutes}:${seconde}`
+    },
+    // 删除博客
+    del (id, index) {
+      this.$confirm('是否删除该博客？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          var formData = new FormData()
+          formData.append('articleIds', [id])
+          this.axios.post('article/delete', formData)
+            .then(res => {
+              if (res.data.success) {
+                this.myblog.splice(index, 1)
+                this.$message({
+                  type: 'success',
+                  message: '删除成功！'
+                })
+              } else {
+                this.$message.error('删除失败！')
+              }
+            })
+            .catch(err => {
+              console.log(err)
+              this.$message.error('删除失败！')
+            })
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message({
+            type: 'info',
+            message: '取消成功'
+          })
+        })
     }
   },
   watch: {

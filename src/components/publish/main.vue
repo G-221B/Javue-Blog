@@ -8,14 +8,21 @@
       </p>
       <p>
         <label for="blog-content">请输入文章内容:</label>
-        <textarea
+        <!-- <textarea
           name="blog-content"
           id="blog-content"
           v-model="blog.content"
           cols="200"
           rows="10"
           placeholder="请输入文章内容"
-        ></textarea>
+        ></textarea>-->
+        <mavon-editor
+          v-model="blog.content"
+          style="color:black;z-index:1;height:700px;box-shadow:0;"
+          :ishljs="true"
+          ref="md"
+          @imgAdd="$imgAdd"
+        />
       </p>
       <p class="check">
         <span>请选择文章分类:</span>
@@ -66,7 +73,8 @@ export default {
       classs: [],
       frontEnd: [],
       backEnd: [],
-      loading: false
+      loading: false,
+      url: '/article/insert' // 默认是新增文章
     }
   },
   components: {
@@ -93,22 +101,28 @@ export default {
     // 发表文章
     publish () {
       if (this.blog.title.trim() !== '' && this.blog.content.trim() !== '' && this.blog.belong.trim() !== '' && this.blog.class !== '') {
-        this.loading = true
+        this.loading = true // 开启加载
         var formData = new FormData()
         formData.append('bigType', this.blog.belong === '前端' ? 0 : 1)
         formData.append('articleType', this.blog.class)
         formData.append('userId', window.sessionStorage.getItem('userId'))
         formData.append('articleTitle', this.blog.title)
         formData.append('articleContent', this.blog.content)
-        this.axios.post('/article/insert', formData)
+        formData.append('articleStatus', 1)
+        if (this.$route.params.id !== '-1') { // 处理修改文章
+          formData.append('articleId', this.$route.params.id)
+          this.url = '/article/update'
+        }
+        this.axios.post(this.url, formData)
           .then(res => {
+            console.log(res)
             if (res.data.success) {
               this.$message({
                 message: '发表成功',
                 type: 'success'
               })
               this.$router.push('/index')
-              this.loading = false
+              this.loading = false // 结束加载
             } else {
               this.$message.error('发表失败！！请重新尝试!')
               this.loading = false
@@ -122,6 +136,17 @@ export default {
       } else {
         this.$message.error('请完善表单内容！！')
       }
+    },
+    // 上传文章图片，pos是图片的位置，就是第几张的意思
+    $imgAdd (pos, $file) {
+      var formData = new FormData()
+      formData.append('fileName', $file)
+      this.axios.post('/article/image', formData)
+        .then(res => {
+          if (res.data.pic) {
+            this.$refs.md.$img2Url(pos, 'http://localhost:8080/blog' + res.data.pic)
+          }
+        })
     }
   },
   created () {
@@ -129,7 +154,6 @@ export default {
     this.axios.get('/categories', { withCredentials: false })
       .then(res => {
         if (res.data.status === 0) {
-          console.log(res)
           res.data.data.forEach(item => {
             if (item.bigType === 0) {
               this.frontEnd.push({ value: item.categoryId, label: item.categoryName })
@@ -145,6 +169,22 @@ export default {
         console.log(err)
         this.$message.error('加载类别失败，请刷新页面重新试试')
       })
+    // 处理修改文章的初始化
+    if (this.$route.params.id !== '-1') {
+      this.axios.get('/article/detail?articleId=' + this.$route.params.id)
+        .then(res => {
+          if (res.data.success) {
+            this.blog.title = res.data.data.articleTitle
+            this.blog.content = res.data.data.articleContent
+          } else {
+            this.$message.error('加载失败')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('加载失败')
+        })
+    }
   }
 }
 </script>

@@ -45,15 +45,17 @@ export default {
     logout () {
       this.axios.get('/loginout')
         .then(res => {
+          // 退出成功
           if (res.data.success) {
+            // 清空session
             window.sessionStorage.setItem('login', false)
             window.sessionStorage.setItem('userId', null)
             window.sessionStorage.setItem('user', null)
-            this.login = false
             this.$message({
               message: '退出成功',
               type: 'success'
             })
+            // 跳转回登陆页
             this.$router.push('/minlogin')
           } else {
             this.$message.error('退出失败，请重新尝试')

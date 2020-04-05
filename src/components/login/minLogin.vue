@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div class="content" v-loading.fullscreen="loading">
     <p>
       <label for="id">用户名:&nbsp;&nbsp;&nbsp;&nbsp;</label>
       <el-input placeholder="请输入用户名" v-model="id" class="input" id="id"></el-input>
@@ -31,7 +31,8 @@ export default {
   data () {
     return {
       id: '', // 用户名
-      password: '' // 密码
+      password: '', // 密码
+      loading: false
     }
   },
   methods: {
@@ -47,6 +48,7 @@ export default {
         this.$message.error('请完善表单内容')
         return
       }
+      this.loading = true
       // 封装要传的参数
       var formData = new FormData()
       formData.append('username', this.id.trim())
@@ -54,7 +56,7 @@ export default {
       // 发起登陆请求
       this.axios.post('/login', formData)
         .then(res => {
-          if (res.data.status === 0) {
+          if (res.data.success) {
             console.log(res)
             this.$message({
               message: '登陆成功',
@@ -65,13 +67,16 @@ export default {
             window.sessionStorage.setItem('userId', res.data.data)
             // 跳转到首页
             this.$router.push('/index')
+            this.loading = false
           } else {
             this.$message.error(res.data.msg)
+            this.loading = false
           }
         })
         .catch(err => {
           console.log(err)
           this.$message.error('未知错误')
+          this.loading = false
         })
     }
   }

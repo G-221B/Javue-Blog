@@ -18,8 +18,8 @@
           </div>
           <div class="handle">
             <span>
-              <a href="#" @click.prevent="changePraise($event, index)">
-                <i class="iconfont icon-dianzan" :class="{pariseActive: item.flag}"></i>
+              <a href="#" @click.prevent="parise(item.articleId, index)">
+                <i class="iconfont icon-dianzan" :class="{pariseActive: item.star}"></i>
                 &nbsp;{{item.articleStar}}
               </a>
             </span>
@@ -65,15 +65,6 @@ export default {
     Right
   },
   methods: {
-    changePraise (event, index) {
-      if (this.contentList[index].flag === true) {
-        this.contentList[index].flag = false
-        this.contentList[index].praise--
-      } else {
-        this.contentList[index].flag = true
-        this.contentList[index].praise++
-      }
-    },
     // 前往下一页
     getNext () {
       this.pageIndex++
@@ -123,6 +114,39 @@ export default {
       } else {
         return 'article/condition/select?articleTitle=' + val
       }
+    },
+    // 点赞
+    parise (id, i) {
+      this.axios.get('/islogin')
+        .then(res => {
+          if (res.data.success) {
+            var formData = new FormData()
+            formData.append('userId', parseInt(window.sessionStorage.getItem('userId')))
+            formData.append('articleId', parseInt(id))
+            this.axios.post('/star', formData)
+              .then(res => {
+                if (res.data.success) {
+                  if (this.contentList[i].star === false) {
+                    this.contentList[i].articleStar++
+                    this.contentList[i].star = true
+                  } else {
+                    this.contentList[i].articleStar--
+                    this.contentList[i].star = false
+                  }
+                }
+              })
+              .catch(err => {
+                this.$message.error('点赞失败！')
+                console.log(err)
+              })
+          } else {
+            this.$message.error('点赞失败，请先登陆！')
+          }
+        })
+        .catch(err => {
+          this.$message.error('点赞失败！')
+          console.log(err)
+        })
     }
   },
   created () {

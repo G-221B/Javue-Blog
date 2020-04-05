@@ -20,6 +20,15 @@ export default {
   },
   methods: {
 
+  },
+  created () {
+    // 处理用户登陆失效在用户界面跳回登陆页
+    this.axios.get('/islogin')
+      .then(res => {
+        if (!res.data.success) {
+          this.$router.push('/minlogin')
+        }
+      })
   }
 }
 </script>

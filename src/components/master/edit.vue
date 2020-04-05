@@ -138,7 +138,7 @@ export default {
             console.log(err)
             this.$message({
               type: 'info',
-              message: '已取消保存'
+              message: '保存失败'
             })
           })
       }

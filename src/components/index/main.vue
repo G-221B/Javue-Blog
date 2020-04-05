@@ -19,7 +19,7 @@
         <span v-text="titleList[checkIndex]"></span>
       </h3>
       <ul class="content-list">
-        <li v-for="item in contentList" :key="item.articleId">
+        <li v-for="(item,index) in contentList" :key="item.articleId">
           <h3 class="content-titile">
             <router-link :to="'/article/'+item.articleId" v-text="item.articleTitle"></router-link>
           </h3>
@@ -31,9 +31,11 @@
           </div>
           <div class="handle">
             <span>
-              <a href="#">
-                <i class="iconfont icon-dianzan"></i>
-                &nbsp;{{item.articleStar}}
+              <a href="#" @click.prevent="parise(item.articleId,index)">
+                <i
+                  class="iconfont icon-dianzan"
+                  :class="{'active': item.star}"
+                >&nbsp;{{item.articleStar}}</i>
               </a>
             </span>
             <span>
@@ -189,6 +191,39 @@ export default {
       } else {
         this.getArticle('/article/condition/select?page=' + this.pageIndex)
       }
+    },
+    // 点赞
+    parise (id, i) {
+      this.axios.get('/islogin')
+        .then(res => {
+          if (res.data.success) {
+            var formData = new FormData()
+            formData.append('userId', parseInt(window.sessionStorage.getItem('userId')))
+            formData.append('articleId', parseInt(id))
+            this.axios.post('/star', formData)
+              .then(res => {
+                if (res.data.success) {
+                  if (this.contentList[i].star === false) {
+                    this.contentList[i].articleStar++
+                    this.contentList[i].star = true
+                  } else {
+                    this.contentList[i].articleStar--
+                    this.contentList[i].star = false
+                  }
+                }
+              })
+              .catch(err => {
+                this.$message.error('点赞失败！')
+                console.log(err)
+              })
+          } else {
+            this.$message.error('点赞失败，请先登陆！')
+          }
+        })
+        .catch(err => {
+          this.$message.error('点赞失败！')
+          console.log(err)
+        })
     }
   },
   // 初始化数据
@@ -385,11 +420,14 @@ a {
               margin-top: 10px;
               padding: 0;
               border: 0;
-              color: #41aaff;
+              color: #999999;
               font-size: 13px;
               i {
                 color: #999;
-                font-size: 14;
+                font-size: 14px;
+              }
+              .active {
+                color: #41aaff;
               }
             }
           }

@@ -16,17 +16,18 @@
         <label for="newPassword">新密码:</label>
         <el-input
           show-password
-          placeholder="请输入旧密码"
+          placeholder="请输入8-16位新密码"
           id="newPassword"
           v-model="newPassword"
           class="input"
+          @blur="checkPassword"
         ></el-input>
       </p>
       <p>
         <label for="confirm">确认密码:</label>
         <el-input
           show-password
-          placeholder="请输入旧密码"
+          placeholder="请确认新密码"
           id="confirm"
           v-model="confirm"
           class="input"
@@ -42,7 +43,7 @@
         </span>
       </p>
       <p class="btns">
-        <el-button type="primary" class="btn">保存</el-button>
+        <el-button type="primary" class="btn" @click="save">保存</el-button>
         <el-button type="info" @click="reset" class="btn">重置</el-button>
       </p>
     </form>
@@ -68,6 +69,8 @@ export default {
       this.oldPassword = ''
       this.newPassword = ''
       this.confirm = ''
+      this.errorText = ''
+      this.successText = ''
     },
     checkPassword () {
       if (this.confirm !== this.newPassword) {
@@ -80,6 +83,46 @@ export default {
       if (this.confirm === '') {
         this.errorText = ''
         this.successText = ''
+      }
+    },
+    // 提交修改
+    save () {
+      if (this.newPassword.trim().length < 8 || this.newPassword.trim().length > 16) {
+        this.$message.error('请输入8-16位的新密码')
+      } else if (this.oldPassword.trim() === '' || this.newPassword.trim() === '' || this.confirm.trim() === '') {
+        this.$message.error('请完善表单内容')
+      } else {
+        this.$confirm('确认修改密码？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            var formData = new FormData()
+            formData.append('userId', window.sessionStorage.getItem('userId'))
+            formData.append('oldPassword', this.oldPassword.trim())
+            formData.append('newPassword', this.confirm.trim())
+            this.axios.post('/user/update/oldPassword', formData)
+              .then(res => {
+                console.log(res)
+                if (res.data.success) {
+                  this.$message({
+                    message: '修改成功',
+                    type: 'success'
+                  })
+                  this.reset()
+                } else {
+                  this.$message.error('修改失败')
+                }
+              })
+          })
+          .catch(err => {
+            console.log(err)
+            this.$message({
+              type: 'info',
+              message: '已取消保存'
+            })
+          })
       }
     }
   }

@@ -90,7 +90,7 @@ const routes = [
   },
   {
     // 发表博客
-    path: '/publish',
+    path: '/publish/:id',
     component: Publish
   },
   {

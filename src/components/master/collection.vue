@@ -3,35 +3,47 @@
     <h3 class="edit-title">我的收藏</h3>
     <div class="blog-list clearfix">
       <ul>
-        <li v-for="item in collections" :key="item.id">
+        <li v-for="(item,index) in collections" :key="item.articleId">
           <h3>
-            <a href="#" v-text="item.title"></a>
+            <a href="#" v-text="item.articleTitle"></a>
           </h3>
           <div class="blog-msg">
-            <span class="time" v-text="item.time"></span>
+            <span class="time" v-if="item.article">{{item.article.createTime | format}}</span>
             <span class="parise">
-              <a href="#" v-cloak>
+              <a href="#" v-cloak v-if="item.article">
                 <i class="iconfont icon-dianzan"></i>
-                &nbsp;{{item.parise}}
+                &nbsp;{{item.article.articleStar}}
               </a>
             </span>
             <span class="comment">
-              <a href="#" v-cloak>
+              <a href="#" v-cloak v-if="item.article">
                 <i class="iconfont icon-pinglun"></i>
-                &nbsp;{{item.comment}}
+                &nbsp;{{item.article.commentCount}}
               </a>
             </span>
           </div>
           <div class="blog-handle">
             <span class="check">
-              <a href="#">查看</a>
+              <router-link :to="'/article/'+item.articleId">查看</router-link>
             </span>
             <span class="delete">
-              <a href="#">删除</a>
+              <a href="#" @click.prevent="del(item.collectionId,index)">移除</a>
             </span>
           </div>
         </li>
       </ul>
+    </div>
+    <div class="getmore">
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size="3"
+        :current-page="pageIndex"
+        @next-click="getNext"
+        @prev-click="getPre"
+        @current-change="pageSkip"
+      ></el-pagination>
     </div>
   </div>
 </template>
@@ -40,50 +52,101 @@
 export default {
   data () {
     return {
-      collections: [
-        {
-          id: 1,
-          title: 'css小结：清除float带来的影响',
-          time: '2020年03月05年 09:55:40',
-          parise: 32,
-          comment: 13
-        },
-        {
-          id: 2,
-          title: 'css小结：清除float带来的影响',
-          time: '2020年03月05年 09:55:40',
-          parise: 32,
-          comment: 13
-        },
-        {
-          id: 3,
-          title: 'css小结：清除float带来的影响',
-          time: '2020年03月05年 09:55:40',
-          parise: 32,
-          comment: 13
-        },
-        {
-          id: 4,
-          title: 'css小结：清除float带来的影响',
-          time: '2020年03月05年 09:55:40',
-          parise: 32,
-          comment: 13
-        },
-        {
-          id: 5,
-          title: 'css小结：清除float带来的影响',
-          time: '2020年03月05年 09:55:40',
-          parise: 32,
-          comment: 13
-        }
-      ]
+      collections: [],
+      // 总页
+      total: 1,
+      // 标识在第几页
+      pageIndex: 1,
+      pageUrl: '/collection/select?userId=' + window.sessionStorage.getItem('userId')
     }
   },
   components: {
 
   },
   methods: {
-
+    // 封装获取文章代码
+    getArticle (url) {
+      this.axios.get(url)
+        .then(res => {
+          if (res.data.success) {
+            // 页数
+            this.total = this.$store.state.pageSize * res.data.data.totalPages
+            this.collections = res.data.data.content
+          } else {
+            this.$message.error('加载失败')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('加载失败')
+        })
+    },
+    // 下一页
+    getNext () {
+      this.pageIndex++
+      this.getArticle(this.pageUrl + '&page=' + this.pageIndex)
+    },
+    // 上一页
+    getPre () {
+      this.pageIndex++
+      this.getArticle(this.pageUrl + '&page=' + this.pageIndex)
+    },
+    // 跳页
+    pageSkip (index) {
+      this.pageIndex = index
+      this.getArticle(this.pageUrl + '&page=' + this.pageIndex)
+    },
+    // 删除收藏文章
+    del (id, i) {
+      this.$confirm('是否移除该收藏？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          var formData = new FormData()
+          formData.append('collectionIds', id)
+          this.axios.post('/collection/remove', formData)
+            .then(res => {
+              console.log(res)
+              if (res.data.success) {
+                this.collections.splice(i, 1)
+                this.$message({
+                  type: 'success',
+                  message: '移除成功！'
+                })
+              } else {
+                this.$message.error('移除失败,请重新尝试!')
+              }
+            })
+            .catch(err => {
+              console.log(err)
+              this.$message.error('移除异常,请重新尝试!')
+            })
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message({
+            type: 'info',
+            message: '取消成功'
+          })
+        })
+    }
+  },
+  created () {
+    this.axios.get(this.pageUrl)
+      .then(res => {
+        console.log(res)
+        if (res.data.success) {
+          this.collections = res.data.data.content
+        } else {
+          this.$message.error('获取失败')
+        }
+      })
+      .catch(err => {
+        console.log(err)
+        this.$message.error('获取失败')
+      })
   }
 }
 </script>
@@ -148,6 +211,9 @@ li {
         }
       }
     }
+  }
+  .getmore {
+    text-align: center;
   }
 }
 </style>
