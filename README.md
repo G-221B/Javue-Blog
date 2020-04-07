@@ -1,1 +1,21 @@
-## javue博客的前端代码
+## javue博客使用的前端技术:
+### 1.vue.js 
+### 2.mavon-editor
+### 3.axios
+### 4.element-ui
+## 页面展示:
+### 首页
+![Image text](./demo-img/首页.png)
+### 登陆
+![Image text](./demo-img/登陆.png)
+### 注册
+![Image text](./demo-img/注册.png)
+### 搜索
+![Image text](./demo-img/搜索.png)
+### 个人资料
+![Image text](./demo-img/个人资料.png)
+### 发表博客
+![Image text](./demo-img/发表博客.png)
+### 浏览博客
+![Image text](./demo-img/浏览博客.png)
+
