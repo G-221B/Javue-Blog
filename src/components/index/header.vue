@@ -10,14 +10,14 @@
             <li>
               <router-link to="/index">首页</router-link>
             </li>
-            <li>
+            <!-- <li>
               <router-link :to="{name: 'search', params: {key: '前端'}}">前端</router-link>
             </li>
             <li>
               <router-link :to="{name: 'search', params: {key: '后端'}}">后端</router-link>
-            </li>
+            </li>-->
             <li>
-              <router-link to="/what">关于</router-link>
+              <router-link to="/about">关于</router-link>
             </li>
           </ul>
         </div>
@@ -29,7 +29,7 @@
         </div>
         <div class="avatar" v-if="login">
           <router-link to="/master/message">
-            <img :src="'http://localhost:8080/blog'+$store.state.avatar" alt />
+            <img :src="$store.state.url+$store.state.avatar" alt />
           </router-link>
           <ul class="myItems">
             <li>
@@ -197,10 +197,11 @@ a {
 }
 .list {
   float: left;
-  margin-left: 30px;
+  margin-left: 60px;
 }
 .list > ul > li {
   float: left;
+  margin-left: 30px;
 }
 .list ul li a {
   display: block;
@@ -220,11 +221,11 @@ a {
 }
 .list ul li .router-link-active {
   height: 49px;
-  background-color: #f0f1f2;
   border-bottom: 3px solid #409eff;
 }
 .search {
   float: left;
+  margin-left: 30px;
   height: 52px;
   line-height: 52px;
 }

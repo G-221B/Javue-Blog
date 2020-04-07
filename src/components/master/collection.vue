@@ -5,7 +5,7 @@
       <ul>
         <li v-for="(item,index) in collections" :key="item.articleId">
           <h3>
-            <a href="#" v-text="item.articleTitle"></a>
+            <router-link :to="'/article/'+item.articleId" v-text="item.articleTitle"></router-link>
           </h3>
           <div class="blog-msg">
             <span class="time" v-if="item.article">{{item.article.createTime | format}}</span>
@@ -38,7 +38,7 @@
         background
         layout="prev, pager, next"
         :total="total"
-        :page-size="3"
+        :page-size="$store.state.pageSize"
         :current-page="pageIndex"
         @next-click="getNext"
         @prev-click="getPre"
@@ -88,7 +88,7 @@ export default {
     },
     // 上一页
     getPre () {
-      this.pageIndex++
+      this.pageIndex--
       this.getArticle(this.pageUrl + '&page=' + this.pageIndex)
     },
     // 跳页
@@ -115,6 +115,8 @@ export default {
                   type: 'success',
                   message: '移除成功！'
                 })
+                // 重新获取页面数据
+                this.getArticle(this.pageUrl)
               } else {
                 this.$message.error('移除失败,请重新尝试!')
               }
@@ -124,29 +126,10 @@ export default {
               this.$message.error('移除异常,请重新尝试!')
             })
         })
-        .catch(err => {
-          console.log(err)
-          this.$message({
-            type: 'info',
-            message: '取消成功'
-          })
-        })
     }
   },
   created () {
-    this.axios.get(this.pageUrl)
-      .then(res => {
-        console.log(res)
-        if (res.data.success) {
-          this.collections = res.data.data.content
-        } else {
-          this.$message.error('获取失败')
-        }
-      })
-      .catch(err => {
-        console.log(err)
-        this.$message.error('获取失败')
-      })
+    this.getArticle(this.pageUrl)
   }
 }
 </script>

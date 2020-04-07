@@ -16,12 +16,16 @@ import EditPassword from '../components/master/editPassword.vue'
 import EditBlog from '../components/master/editBlog.vue'
 import Collection from '../components/master/collection.vue'
 import PhoneEditPassword from '../components/master/phoneEditPassword.vue'
+import Draft from '../components/master/draft.vue'
+import Recycle from '../components/master/recycle.vue'
 // 发表文章页面
 import Publish from '../components/Publish.vue'
 // 文章页面
 import Article from '../components/Article'
 // 搜索页面
 import Search from '../components/Search'
+// 关于页面
+import About from '../components/About'
 
 Vue.use(VueRouter)
 
@@ -30,6 +34,11 @@ const routes = [
     // 重定向去密码登陆
     path: '/',
     redirect: '/minlogin'
+  },
+  {
+    // 关于页面
+    path: '/about',
+    component: About
   },
   {
     // 登陆页面
@@ -85,6 +94,15 @@ const routes = [
         // 手机改密
         path: '/master/phoneEditPassword',
         component: PhoneEditPassword
+      },
+      {
+        // 我的草稿
+        path: '/master/draft',
+        component: Draft
+      },
+      {
+        path: '/master/recycle',
+        component: Recycle
       }
     ]
   },

@@ -3,7 +3,7 @@
     <h3 class="info-title">个人资料</h3>
     <div class="info">
       <p class="info-img">
-        <img :src="'http://localhost:8080/blog'+user.userImage" alt />
+        <img :src="$store.state.url+user.userImage" alt />
       </p>
       <p class="info-item">
         昵称：

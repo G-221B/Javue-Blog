@@ -21,13 +21,14 @@ Vue.config.productionTip = false
 // 配置axios
 Vue.prototype.axios = axios
 axios.defaults.withCredentials = true
-axios.defaults.baseURL = 'http://localhost:8080/blog'
+axios.defaults.baseURL = 'http://47.105.35.184:8080/blog'
 Vue.use(Vuex)
 
 var store = new Vuex.Store({
   state: {
     avatar: JSON.parse(window.sessionStorage.getItem('user')) === null ? '' : JSON.parse(window.sessionStorage.getItem('user')).userImage,
-    pageSize: 3
+    pageSize: 10,
+    url: 'http://47.105.35.184:8080/blog'
   }
 })
 
@@ -35,8 +36,8 @@ var store = new Vuex.Store({
 Vue.filter('format', (val) => {
   var date = new Date(Date.parse(val))
   var year = date.getFullYear()
-  var month = date.getMonth() - 1
-  var day = date.getDay()
+  var month = date.getMonth() + 1
+  var day = date.getDate()
   var hour = date.getHours()
   var minutes = date.getMinutes()
   var seconde = date.getSeconds()

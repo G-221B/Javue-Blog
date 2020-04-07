@@ -40,7 +40,7 @@
         background
         layout="prev, pager, next"
         :total="total"
-        :page-size="3"
+        :page-size="$store.state.pageSize"
         :current-page="pageIndex"
         @next-click="getNext"
         @prev-click="getPre"
@@ -94,7 +94,7 @@ export default {
             })
             // 处理图片路径
             this.contentList.forEach(item => {
-              item.userImage = 'http://localhost:8080/blog' + item.userImage
+              item.userImage = this.$store.state.url + item.userImage
             })
           } else {
             this.$message.error('获取失败！！')
@@ -107,13 +107,7 @@ export default {
     },
     // 获取url
     getUrl (val) {
-      if (val === '前端') {
-        return 'article/condition/select?bigType=0'
-      } else if (val === '后端') {
-        return 'article/condition/select?bigType=1'
-      } else {
-        return 'article/condition/select?articleTitle=' + val
-      }
+      return 'article/condition/select?articleTitle=' + val
     },
     // 点赞
     parise (id, i) {

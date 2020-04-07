@@ -16,10 +16,16 @@
           <router-link to="/master/collection">我的收藏</router-link>
         </li>
         <li>
+          <router-link to="/master/draft">我的草稿</router-link>
+        </li>
+        <li>
           <router-link to="/master/editPassword">修改密码</router-link>
         </li>
         <li>
           <router-link to="/master/phoneEditPassword">手机改密</router-link>
+        </li>
+        <li>
+          <router-link to="/master/recycle">回收站</router-link>
         </li>
         <li>
           <a href="#" @click.prevent="logout">退出</a>

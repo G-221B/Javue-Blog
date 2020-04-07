@@ -44,6 +44,11 @@
                 &nbsp;{{item.commentCount}}
               </a>
             </span>
+            <span>
+              <a href="#">
+                <i class="iconfont icon-liulan">&nbsp;{{item.articleView}}</i>
+              </a>
+            </span>
           </div>
         </li>
         <li v-if="contentList.length === 0" style="color:#409eff">无相关记录！</li>
@@ -54,7 +59,7 @@
         background
         layout="prev, pager, next"
         :total="total"
-        :page-size="3"
+        :page-size="6"
         :current-page="pageIndex"
         @next-click="getNext"
         @prev-click="getPre"
@@ -70,7 +75,7 @@ export default {
   data () {
     return {
       // 类别
-      titleList: ['全部'],
+      titleList: ['全部', '前端', '后端'],
       // 当前选中的类别的下标
       checkIndex: 0,
       // 文章列表
@@ -96,11 +101,13 @@ export default {
   methods: {
     // 改变类别
     select (index) {
+      var i = index
       // 把title的下标更换成点击的下标
       this.checkIndex = index
       // 处理其他分类
-      if (index !== 0) {
-        this.axios.get('/article/condition/select?articleType=' + index, { withCredentials: true })
+      if (index > 2) {
+        i -= 2
+        this.axios.get('/article/condition/select?articleType=' + i, { withCredentials: true })
           .then(res => {
             if (res.data.status === 0) {
               // 页数
@@ -117,7 +124,7 @@ export default {
             console.log(err)
             this.$message.error('未知错误')
           })
-      } else { // 处理全部分类
+      } else if (index === 0) { // 处理全部分类
         // 获取文章列表
         this.axios.get('/article/condition/select')
           .then(res => {
@@ -136,6 +143,25 @@ export default {
           .catch(err => {
             console.log(err)
             this.$message.error('加载文章列表失败，请刷新页面重新试试')
+          })
+      } else {
+        i -= 1
+        this.axios.get('/article/condition/select?bigType=' + i, { withCredentials: true })
+          .then(res => {
+            if (res.data.status === 0) {
+              // 页数
+              this.total = this.$store.state.pageSize * res.data.data.totalPages
+              this.pageIndex = 1 // 让默认的页号为第一页
+              this.contentList = res.data.data.content
+            } else {
+              // 获取失败
+              this.$message.error('获取分类失败！！')
+            }
+          })
+          // 后台错误
+          .catch(err => {
+            console.log(err)
+            this.$message.error('未知错误')
           })
       }
     },
@@ -168,28 +194,43 @@ export default {
     // 前往下一页
     getNext () {
       this.pageIndex++
-      if (this.checkIndex !== 0) {
-        this.getArticle('/article/condition/select?articleType=' + this.checkIndex + '&page=' + this.pageIndex)
-      } else {
+      var page = this.checkIndex
+      if (this.checkIndex > 2) {
+        page -= 2
+        this.getArticle('/article/condition/select?articleType=' + page + '&page=' + this.pageIndex)
+      } else if (this.checkIndex === 0) {
         this.getArticle('/article/condition/select?page=' + this.pageIndex)
+      } else {
+        page -= 1
+        this.getArticle('/article/condition/select?bigType=' + page + '&page=' + this.pageIndex)
       }
     },
     // 上一页
     getPre () {
       this.pageIndex--
-      if (this.checkIndex !== 0) {
-        this.getArticle('/article/condition/select?articleType=' + this.checkIndex + '&page=' + this.pageIndex)
-      } else {
+      var page = this.checkIndex
+      if (this.checkIndex > 2) {
+        page -= 2
+        this.getArticle('/article/condition/select?articleType=' + page + '&page=' + this.pageIndex)
+      } else if (this.checkIndex === 0) {
         this.getArticle('/article/condition/select?page=' + this.pageIndex)
+      } else {
+        page -= 1
+        this.getArticle('/article/condition/select?bigType=' + page + '&page=' + this.pageIndex)
       }
     },
     // 跳页
     pageSkip (index) {
       this.pageIndex = index
-      if (this.checkIndex !== 0) {
-        this.getArticle('/article/condition/select?articleType=' + this.checkIndex + '&page=' + this.pageIndex)
-      } else {
+      var page = this.checkIndex
+      if (this.checkIndex > 2) {
+        page -= 2
+        this.getArticle('/article/condition/select?articleType=' + page + '&page=' + this.pageIndex)
+      } else if (this.checkIndex === 0) {
         this.getArticle('/article/condition/select?page=' + this.pageIndex)
+      } else {
+        page -= 1
+        this.getArticle('/article/condition/select?bigType=' + page + '&page=' + this.pageIndex)
       }
     },
     // 点赞
@@ -231,6 +272,7 @@ export default {
     // 获取文章列表
     this.axios.get('/article/condition/select')
       .then(res => {
+        console.log(res)
         if (res.data.status === 0) {
           // 获取页数
           this.total = res.data.data.content.length * res.data.data.totalPages

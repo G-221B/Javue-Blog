@@ -45,7 +45,8 @@
         </el-select>
       </p>
       <p class="btns">
-        <el-button type="primary" class="btn" @click="publish">发表</el-button>
+        <el-button type="primary" class="btn" @click="saveAsBlog">发表</el-button>
+        <el-button type="success" class="btn" @click="saveAsDraft">保存</el-button>
         <el-button type="info" @click="reset" class="btn">重置</el-button>
       </p>
     </form>
@@ -74,6 +75,7 @@ export default {
       frontEnd: [],
       backEnd: [],
       loading: false,
+      status: 1, // 1是发表 0是保存
       url: '/article/insert' // 默认是新增文章
     }
   },
@@ -98,6 +100,16 @@ export default {
       this.blog.belong = ''// 大分类
       this.blog.class = ''// 小分类
     },
+    // 保存为草稿
+    saveAsDraft () {
+      this.status = 0
+      this.publish()
+    },
+    // 发表博客
+    saveAsBlog () {
+      this.status = 1
+      this.publish()
+    },
     // 发表文章
     publish () {
       if (this.blog.title.trim() !== '' && this.blog.content.trim() !== '' && this.blog.belong.trim() !== '' && this.blog.class !== '') {
@@ -108,7 +120,7 @@ export default {
         formData.append('userId', window.sessionStorage.getItem('userId'))
         formData.append('articleTitle', this.blog.title)
         formData.append('articleContent', this.blog.content)
-        formData.append('articleStatus', 1)
+        formData.append('articleStatus', this.status)
         if (this.$route.params.id !== '-1') { // 处理修改文章
           formData.append('articleId', this.$route.params.id)
           this.url = '/article/update'
@@ -118,13 +130,13 @@ export default {
             console.log(res)
             if (res.data.success) {
               this.$message({
-                message: '发表成功',
+                message: '操作成功',
                 type: 'success'
               })
               this.$router.push('/index')
               this.loading = false // 结束加载
             } else {
-              this.$message.error('发表失败！！请重新尝试!')
+              this.$message.error('操作失败！！请重新尝试!')
               this.loading = false
             }
           })

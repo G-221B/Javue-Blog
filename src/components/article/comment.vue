@@ -22,7 +22,7 @@
       <ul>
         <li class="clearfix" v-for="(item,index) in commentList" :key="item.commentId">
           <div class="msg">
-            <img :src="'http://localhost:8080/blog'+item.userImage" alt />
+            <img :src="$store.state.url+item.userImage" alt />
             <span class="name">{{item.userName}}</span>
             <span class="time">{{item.createTime | format}}</span>
           </div>
@@ -79,6 +79,7 @@
             </ul>
           </div>
         </li>
+        <li v-if="commentList.length === 0" style="color:#409eff">无相关评论！</li>
       </ul>
     </div>
     <div class="getmore">
@@ -86,7 +87,7 @@
         background
         layout="prev, pager, next"
         :total="total"
-        :page-size="3"
+        :page-size="$store.state.pageSize"
         :current-page="pageIndex"
         @next-click="getNext"
         @prev-click="getPre"

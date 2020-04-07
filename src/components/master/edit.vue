@@ -14,7 +14,7 @@
         />
         <el-button type="primary" class="upload" @click="upload">上传头像</el-button>
         <span>头像预览:</span>
-        <img alt ref="avatar" :src="'http://localhost:8080/blog'+user.userImage" />
+        <img alt ref="avatar" :src="$store.state.url+user.userImage" />
       </div>
       <p>
         <label for="uname">昵称:</label>
@@ -133,13 +133,6 @@ export default {
                 this.$message.error('未知错误，请重新尝试')
                 this.loading = false
               })
-          })
-          .catch((err) => {
-            console.log(err)
-            this.$message({
-              type: 'info',
-              message: '保存失败'
-            })
           })
       }
     }

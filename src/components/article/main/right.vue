@@ -21,44 +21,7 @@
 export default {
   data () {
     return {
-      hotList: [
-        // {
-        //   id: 1,
-        //   title: 'vue中v-for循环选中点击的元素并对该元素添加样式',
-        //   time: '3-10',
-        //   author: '章鱼哥'
-        // },
-        // {
-        //   id: 2,
-        //   title: 'vue中v-for循环选中点击的元素并对该元素添加样式',
-        //   time: '3-10',
-        //   author: '章鱼哥'
-        // },
-        // {
-        //   id: 3,
-        //   title: 'vue中v-for循环选中点击的元素并对该元素添加样式',
-        //   time: '3-10',
-        //   author: '章鱼哥'
-        // },
-        // {
-        //   id: 4,
-        //   title: 'vue中v-for循环选中点击的元素并对该元素添加样式',
-        //   time: '3-10',
-        //   author: '章鱼哥'
-        // },
-        // {
-        //   id: 5,
-        //   title: 'vue中v-for循环选中点击的元素并对该元素添加样式',
-        //   time: '3-10',
-        //   author: '章鱼哥'
-        // },
-        // {
-        //   id: 6,
-        //   title: 'vue中v-for循环选中点击的元素并对该元素添加样式',
-        //   time: '3-10',
-        //   author: '章鱼哥'
-        // }
-      ]
+      hotList: [] // 热门推荐
     }
   },
   components: {
@@ -68,9 +31,11 @@ export default {
 
   },
   created () {
-    this.axios.get('/article/condition/select')
+    this.axios.get('/article/rank')
       .then(res => {
-        this.hotList = res.data.data.content
+        if (res.data.success) {
+          this.hotList = res.data.data.content
+        }
       })
       .catch(err => {
         console.log(err)
