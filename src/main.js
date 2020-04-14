@@ -4,6 +4,7 @@ import router from './router/router'
 import './plugins/element.js'
 import './assets/css/global.css'
 import './assets/css/iconfont.css'
+import './assets/css/github-markdown.min.css'
 import axios from 'axios'
 import Vuex from 'vuex'
 import mavonEditor from 'mavon-editor'
@@ -21,16 +22,16 @@ Vue.config.productionTip = false
 // 配置axios
 Vue.prototype.axios = axios
 axios.defaults.withCredentials = true
-// axios.defaults.baseURL = 'http://47.105.35.184:8080/blog'
-axios.defaults.baseURL = 'http://localhost:8080/blog'
+axios.defaults.baseURL = 'http://47.105.35.184:8080/blog'
+// axios.defaults.baseURL = 'http://localhost:8080/blog'
 Vue.use(Vuex)
 
 var store = new Vuex.Store({
   state: {
     avatar: JSON.parse(window.sessionStorage.getItem('user')) === null ? '' : JSON.parse(window.sessionStorage.getItem('user')).userImage,
     pageSize: 10,
-    // url: 'http://47.105.35.184:8080/blog'
-    url: 'http://localhost:8080/blog'
+    url: 'http://47.105.35.184:8080/blog'
+    // url: 'http://localhost:8080/blog'
   }
 })
 

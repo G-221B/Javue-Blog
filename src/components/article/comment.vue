@@ -278,7 +278,6 @@ export default {
     getComment () {
       this.axios.get(this.url)
         .then(res => {
-          console.log(res)
           if (res.data.success) {
             this.total = res.data.data.commentList.length * res.data.data.totalPages
             this.commentList = res.data.data.commentList

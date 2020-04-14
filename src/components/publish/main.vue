@@ -45,9 +45,8 @@
         </el-select>
       </p>
       <p class="btns">
-        <el-button type="primary" class="btn" @click="saveAsBlog">发表</el-button>
         <el-button type="success" class="btn" @click="saveAsDraft">保存</el-button>
-        <el-button type="info" @click="reset" class="btn">重置</el-button>
+        <el-button type="primary" class="btn" @click="saveAsBlog">发表</el-button>
       </p>
     </form>
   </div>
@@ -155,8 +154,8 @@ export default {
       formData.append('fileName', $file)
       this.axios.post('/article/image', formData)
         .then(res => {
-          if (res.data.pic) {
-            this.$refs.md.$img2Url(pos, 'http://localhost:8080/blog' + res.data.pic)
+          if (res.data.success) {
+            this.$refs.md.$img2Url(pos, this.$store.state.url + res.data.data.pic)
           }
         })
     }

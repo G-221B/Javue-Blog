@@ -59,7 +59,7 @@
         background
         layout="prev, pager, next"
         :total="total"
-        :page-size="6"
+        :page-size="this.$store.state.pageSize"
         :current-page="pageIndex"
         @next-click="getNext"
         @prev-click="getPre"
@@ -107,13 +107,17 @@ export default {
       // 处理其他分类
       if (index > 2) {
         i -= 2
-        this.axios.get('/article/condition/select?articleType=' + i, { withCredentials: true })
+        this.axios.get('/article/condition/select?articleType=' + i)
           .then(res => {
             if (res.data.status === 0) {
               // 页数
               this.total = this.$store.state.pageSize * res.data.data.totalPages
               this.pageIndex = 1 // 让默认的页号为第一页
               this.contentList = res.data.data.content
+              // 处理图片路径
+              this.contentList.forEach(item => {
+                item.userImage = this.$store.state.url + item.userImage
+              })
             } else {
               // 获取失败
               this.$message.error('获取分类失败！！')
@@ -134,7 +138,7 @@ export default {
               this.contentList = res.data.data.content
               // 处理图片路径
               this.contentList.forEach(item => {
-                item.userImage = 'http://localhost:8080/blog' + item.userImage
+                item.userImage = this.$store.state.url + item.userImage
               })
             } else {
               this.$message.error('加载文章列表失败，请刷新页面重新试试')
@@ -146,13 +150,17 @@ export default {
           })
       } else {
         i -= 1
-        this.axios.get('/article/condition/select?bigType=' + i, { withCredentials: true })
+        this.axios.get('/article/condition/select?bigType=' + i)
           .then(res => {
             if (res.data.status === 0) {
               // 页数
               this.total = this.$store.state.pageSize * res.data.data.totalPages
               this.pageIndex = 1 // 让默认的页号为第一页
               this.contentList = res.data.data.content
+              // 处理图片路径
+              this.contentList.forEach(item => {
+                item.userImage = this.$store.state.url + item.userImage
+              })
             } else {
               // 获取失败
               this.$message.error('获取分类失败！！')
@@ -167,7 +175,7 @@ export default {
     },
     // 封装点击上、下、跳页部分代码
     getArticle (url) {
-      this.axios.get(url, { withCredentials: true })
+      this.axios.get(url)
         .then(res => {
           if (res.data.success) {
             if (res.data.data.content.length !== 0) {
@@ -177,7 +185,7 @@ export default {
               })
               // 处理图片路径
               this.contentList.forEach(item => {
-                item.userImage = 'http://localhost:8080/blog' + item.userImage
+                item.userImage = this.$store.state.url + item.userImage
               })
             } else {
               this.$message.error('已经加载到尽头了！')
@@ -278,7 +286,7 @@ export default {
           this.total = res.data.data.content.length * res.data.data.totalPages
           this.contentList = res.data.data.content
           this.contentList.forEach(item => {
-            item.userImage = 'http://localhost:8080/blog' + item.userImage
+            item.userImage = this.$store.state.url + item.userImage
           })
         } else {
           this.$message.error('加载文章列表失败，请刷新页面重新试试')

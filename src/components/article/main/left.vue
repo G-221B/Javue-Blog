@@ -15,7 +15,7 @@
         <i class="iconfont icon-shoucang" :class="{'active':blog.collection}">收藏</i>
       </a>
     </p>
-    <div class="content" v-html="blog.content"></div>
+    <div class="markdown-body content" v-html="blog.content"></div>
     <Comment></Comment>
   </div>
 </template>
@@ -80,6 +80,7 @@ export default {
         if (res.data.success) {
           var _data = res.data.data
           this.blog.content = this.converter.makeHtml(_data.articleContent)
+          console.log(this.blog.content)
           this.blog.title = _data.articleTitle
           this.blog.author = _data.userDetail.userName
           this.blog.time = _data.createTime
